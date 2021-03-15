@@ -1,0 +1,76 @@
+#! /usr/bin/env bash
+#
+# svn tools
+#
+
+## Usage:
+# svn-batch-process <dir> <filter_regular_pattern> <filter-out_regular_pattern> <op_cmdline...>
+function svn-batch-process() {
+    if [ $# -lt 4 ]; then
+        echo "paramter wrong!" 1>&2
+        return 1
+    fi
+
+    local dir="$1"
+    local egrep_pattern="$2"
+    local egrep_vpattern="$3"
+    shift 3
+
+    local svn_st=$(svn st "$dir")
+    if [ $? -ne 0 ]; then
+        echo "Error when execute \`svn st\`!" 1>&2
+        return 1
+    elif [ ! -n "$svn_st" ]; then
+        echo "Clean or NOT an svn repository."
+        return 0
+    fi
+
+    svn_st=$(echo "$svn_st" | egrep "$egrep_pattern" | egrep -v "$egrep_vpattern")
+    if [ ! -n "$svn_st" ]; then
+        echo "No files or directories will be processed in $dir"
+        return 0
+    fi
+
+    echo "$svn_st"
+    local confirm
+    read -p "Process above files and directories ( \`$*\` )? [y/N] " confirm
+    if [ "$confirm" == y ] || [ "$confirm" == Y ]; then
+        echo "$svn_st" | awk '{print $2}' | xargs "$@"
+    fi
+}
+
+function svn-remove-unversioned() {
+    local dir=.
+    if [ $# -gt 1 ]; then
+        echo "Parameter wrong" 1>&2
+        return 1
+    elif [ $# -eq 1 ]; then
+        dir=$1
+    fi
+
+    svn-batch-process "$dir" '^\? ' 'ycm_extra_conf|vimrc' rm -rf
+}
+
+function svn-revert-incomplete() {
+    local dir=.
+    if [ $# -gt 1 ]; then
+        echo "Parameter wrong" 1>&2
+        return 1
+    elif [ $# -eq 1 ]; then
+        dir=$1
+    fi
+
+    svn-batch-process "$dir" '^! ' 'ycm_extra_conf|vimrc' svn revert
+}
+
+function svn-revert-modified() {
+    local dir=.
+    if [ $# -gt 1 ]; then
+        echo "Parameter wrong" 1>&2
+        return 1
+    elif [ $# -eq 1 ]; then
+        dir=$1
+    fi
+
+    svn-batch-process "$dir" '^M ' 'ycm_extra_conf|vimrc' svn revert
+}

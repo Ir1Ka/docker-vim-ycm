@@ -1,0 +1,14 @@
+# remove tailing spaces
+alias rmts=rmtailspaces
+function rmtailspaces()
+{
+    sed -i 's/\s\+$//g' $*
+}
+
+# remove c source file tailing spaces
+alias rmcts=rmctailspaces
+function rmctailspaces()
+{
+    find . -name .repo -prune -o -name .git -prune -o -name .svn -prune -o -name out -prune -o -type f \( -name '*.c' -o -name '*.cc' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \) \
+        -exec sed -i 's/\s\+$//g' {} +
+}

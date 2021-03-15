@@ -1,0 +1,68 @@
+#! /usr/bin/env bash
+# Follow is the code search function.
+# refer: https://android.googlesource.com/platform/build/+/refs/heads/master/envsetup.sh
+function ggrep()
+{
+    find . -name .repo -prune -o -name .git -prune -o -name .svn -prune -o -name out -prune -o -type f -name "*\.gradle" \
+        -exec grep --color -n "$@" {} +
+}
+function gogrep()
+{
+    find . -name .repo -prune -o -name .git -prune -o -name .svn -prune -o -name out -prune -o -type f -name "*\.go" \
+        -exec grep --color -n "$@" {} +
+}
+function jgrep()
+{
+    find . -name .repo -prune -o -name .git -prune -o -name .svn -prune -o -name out -prune -o -type f -name "*\.java" \
+        -exec grep --color -n "$@" {} +
+}
+function cgrep()
+{
+    find . -name .repo -prune -o -name .git -prune -o -name .svn -prune -o -name out -prune -o -type f \( -name '*\.c' -o -name '*\.cc' -o -name '*\.cpp' -o -name '*\.h' -o -name '*\.hpp' \) \
+        -exec grep --color -n "$@" {} +
+}
+function resgrep()
+{
+    find . -name .repo -prune -o -name .git -prune -o -name .svn -prune -o -name out -prune -o -type f -name '*\.xml' \
+        -exec grep --color -n "$@" {} +
+}
+function mangrep()
+{
+    find . -name .repo -prune -o -name .git -prune -o -name .svn -prune -o -name out -prune -o -type f -name 'AndroidManifest\.xml' \
+        -exec grep --color -n "$@" {} +
+}
+function sepgrep()
+{
+    find . -name .repo -prune -o -name .git -prune -o -name .svn -prune -o -name out -prune -o -name sepolicy -type d \
+        -exec grep --color -n -r --exclude-dir=\.git "$@" {} +
+}
+function rcgrep()
+{
+    find . -name .repo -prune -o -name .git -prune -o -name .svn -prune -o -name out -prune -o -type f -name "*\.rc*" \
+        -exec grep --color -n "$@" {} +
+}
+function mgrep()
+{
+    find . -name .repo -prune -o -name .git -prune -o -name .svn -prune -o -name out -prune -o \( -regextype posix-egrep -iregex '(.*\/Makefile|.*\/Makefile\..*|.*\.make|.*\.mak|.*\.mk|.*\.bp)' -o -regextype posix-extended -regex '(.*/)?soong/[^/]*.go' \) -type f \
+        -exec grep --color -n "$@" {} +
+}
+function treegrep()
+{
+    find . -name .repo -prune -o -name .git -prune -o -name .svn -prune -o -name out -prune -o -regextype posix-egrep -iregex '.*\.(c|h|cpp|hpp|S|java|xml)' -type f \
+        -exec grep --color -n -i "$@" {} +
+}
+function shgrep()
+{
+    find . -name .repo -prune -o -name .git -prune -o -name .svn -prune -o -name out -prune -o -type f -name "*\.sh" \
+        -exec grep --color -n "$@" {} +
+}
+function dtsgrep()
+{
+    find . -name .repo -prune -o -name .git -prune -o -name .svn -prune -o -name out -prune -o -type f -name "*\.dts*" \
+        -exec grep --color -n "$@" {} +
+}
+function kconfiggrep()
+{
+    find . -name .repo -prune -o -name .git -prune -o -name .svn -prune -o -name out -prune -o \( -regextype posix-egrep -iregex '(.*\/Kconfig|.*\/Kconfig\..*|.*\/defconfig.*|\.config|\.config\..*)' \) -type f \
+        -exec grep --color -n "$@" {} +
+}

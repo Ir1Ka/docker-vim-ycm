@@ -1,0 +1,4 @@
+#! /usr/bin/sh
+
+echo "You can bind a ${BASH_SOURCE[0]} into container."
+echo "    -v /path/to/$(basename ${BASH_SOURCE[0]}):$(realpath ${BASH_SOURCE[0]})"

@@ -1,0 +1,106 @@
+
+###############################################
+
+# repo自动更新地址
+#export REPO_URL='https://gerrit-googlesource.proxy.ustclug.org/git-repo'
+
+[[ -d "$HOME/bin" ]] && ! [[ "$PATH" =~ "$HOME/bin:" ]] && export PATH=$HOME/bin:$PATH
+
+# For Android SDK
+[[ -d "$HOME/Android/Sdk" ]] && [[ -f "$HOME/Android/.sdkrc" ]] && . "$HOME/Android/.sdkrc"
+
+#export USE_CCACHE=1
+#export CCACHE_DIR=$HOME/.ccache
+#export CCACHE_COMPRESS=1
+
+# 利用Privoxy转发ss代理
+function set_proxy() {
+    export ALL_PROXY="http://127.0.0.1:8118"
+    export HTTP_PROXY="http://127.0.0.1:8118"
+    export HTTPS_PROXY="http://127.0.0.1:8118"
+    export FTP_PROXY="http://127.0.0.1:8118"
+    export NO_PROXY="localhost,127.0.0.0/8,::1,192.168.0.0/16,10.0.0.0/8"
+}
+
+function unset_proxy() {
+    unset ALL_PROXY
+    unset HTTP_PROXY
+    unset HTTPS_PROXY
+    unset FTP_PROXY
+    unset NO_PROXY
+}
+#unset_proxy
+
+# 如果未启动，则启动sslocal
+runss=/opt/shadowsocks/runss.sh
+[[ -x $runss ]] && ${runss}
+unset runss
+
+# pyenv. Enabling pyenv will seriously affect the bash response speed.
+function enable_pyenv() {
+    export PYENV_ROOT=$HOME/.pyenv
+    export PATH=$PYENV_ROOT/bin:$PATH
+    if command -v pyenv 1>/dev/null 2>&1; then
+        eval "$(pyenv init -)"
+        eval "$(pyenv virtualenv-init -)"
+    fi
+}
+
+# gradle
+#export GRADLE_HOME=/home/irika/.gradle/wrapper/dists/gradle-4.2-all
+#export PATH=$GRADLE_HOME/bin:$PATH
+
+# CUDA
+#export PATH=/usr/local/cuda/bin:$PATH
+#export LD_LIBRARY_PATH=/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
+
+# set umask for wsl
+grep -q Microsoft /proc/version && [[ "$(umask)" == '0000' ]] && umask 0022
+
+# config for elixir
+function elixir_env()
+{
+    export ELIXIR_ROOT=/opt/elixir
+    export LXR_REPO_DIR=${ELIXIR_ROOT}/data/linux/repo
+    export LXR_DATA_DIR=${ELIXIR_ROOT}/data/linux/data
+}
+
+# set history format for display time
+export HISTTIMEFORMAT="%F %T "
+
+# default editor
+export EDITOR=vim
+
+export GOPATH=$HOME/go
+! [[ "$PATH" =~ "$GOPATH/bin:" ]] && export PATH=$GOPATH/bin:$PATH
+
+# Some people don't like fortune. If you uncomment the following lines,
+# you will have a fortune each time you log in ;-)
+if command -v fortune 1>/dev/null 2>&1 ; then
+    echo && fortune && echo
+fi
+
+if ! type command_not_found_handle 1>/dev/null 2>&1; then
+    if [ -f /usr/share/doc/pkgfile/command-not-found.bash ]; then
+        source /usr/share/doc/pkgfile/command-not-found.bash
+    fi
+fi
+
+export GPG_TTY=$(tty)
+export XZ_DEFAULTS="-T 0 -9"
+
+ulimit -n 4096
+
+# include follow rc files if their exist
+DOT_RCS=(
+    .trashrc
+    .greprc
+    .rmtsrc
+    .svntoolsrc
+    .extrarc
+)
+DOT_CUR_DIR="$(dirname "${BASH_SOURCE[0]}")"
+for DOT_RC in "${DOT_RCS[@]}"; do
+    [[ -f "$DOT_CUR_DIR"/"$DOT_RC" ]] && source "$DOT_CUR_DIR"/"$DOT_RC"
+done
+unset DOT_RC DOT_RCS DOT_CUR_DIR

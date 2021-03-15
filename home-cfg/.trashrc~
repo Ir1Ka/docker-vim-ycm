@@ -1,0 +1,202 @@
+#! /usr/bin/env bash
+alias rm=trash
+#alias r=trash
+alias rl=listtrash
+alias ur=undelfile
+alias cr=cleartrash
+
+function nameintrash()
+{
+    if [ $# -ne 1 ] || [ ! -n "$1" ]; then
+        echo "Only one parameter is required." 1>&2
+        return 1
+    fi
+
+    local dir="$(realpath "$(dirname "$1")")"
+    if [ $? != 0 ]; then
+        return 1
+    fi
+    local name="$(basename "$1")"
+    local mountedon="$(df "${dir}" | tail -n1 | awk '{print $NF}')"
+    local trashdir="${mountedon}/.trash-$(id -u)"
+
+    if [ ! -d "${trashdir}" ]; then
+        mkdir -p "${trashdir}"
+        if [ $? != 0 ]; then
+            return 1
+        fi
+    fi
+
+    if [ "${mountedon}" == "${dir}" ]; then
+        echo "${trashdir}/${name}"
+    else
+        dir="${dir//${mountedon}\//}"
+        echo "${trashdir}/${dir//\//%}%${name}"
+    fi
+
+    return 0
+}
+
+function checkfile()
+{
+    if [ $# -ne 1 ] || [ ! -n "$1" ]; then
+        echo "Only one parameter is required." 1>&2
+        return 1
+    fi
+
+    [ -d "$1" ] || [ -f "$1" ] || [ -L "$1" ]
+}
+
+function trash()
+{
+    local fname
+    local fnameintrash
+
+    for fname in "$@"; do
+        if [ "${fname:0:1}" == "-" ]; then
+            echo "${fname} is a invalid file or directory name" 1>&2
+            continue
+        fi
+        ## Don’t expand the ‘*’ because the shell has already been expanded.
+        ## If the ‘*’ appears here, it can be considered that the user explicitly wants to
+        ## use ‘*’ instead of a wildcard.
+        echo "${fname}" | grep -q '*'
+        if [ "$?" == "0" ]; then
+            echo "Do not support '*' in file or directory name: ${fname}" 1>&2
+            continue
+        fi
+        if ! checkfile "$fname"; then
+            echo "${fname} is not exists" 1>&2
+            continue
+        fi
+
+        fnameintrash=$(nameintrash "${fname}")
+        if [ "$?" != "0" ]; then
+            echo "Convert ${fname} to name in trash failed" 1>&2
+            continue
+        fi
+        mv -i "${fname}" "${fnameintrash}"
+    done
+}
+
+function undelfile()
+{
+    local fname
+    local fnameintrash
+
+    for fname in "$@"; do
+        if [ "${fname:0:1}" == "-" ]; then
+            echo "${1} is invalid file or directory name" 1>&2
+            continue
+        fi
+        fnameintrash="$(nameintrash "${fname}")"
+        ## Here we need to expand the ‘*’, because the shell cannot be expanded
+        ## automatically when the file does not exist.
+        echo "${fname}" | grep -q '*'
+        if [ "$?" == "0" ]; then
+            local __fname
+            local __fnameintrash
+
+            for __fnameintrash in ${fnameintrash}; do
+                local trashdir
+
+                trashdir="$(dirname ${__fnameintrash})"
+                __fname="$(basename ${__fnameintrash})"
+                __fname="$(dirname ${trashdir})/${__fname//%/\/}"
+                if ! checkfile "${__fnameintrash}"; then
+                    echo "${__fname} is not in trash" 1>&2
+                    continue
+                fi
+                mv -i "${__fnameintrash}" "${__fname}"
+            done
+        else
+            if ! checkfile "${fnameintrash}"; then
+                echo "${fname} is not in trash" 1>&2
+                continue
+            fi
+            mv -i "${fnameintrash}" "${fname}"
+        fi
+    done
+}
+
+function gettrashdirs()
+{
+    local trashdirs=()
+    local i=0
+
+    local f
+    for f in "$@"; do
+        ## Don’t expand the ‘*’ because the shell has already been expanded.
+        ## If the ‘*’ appears here, it can be considered that the user explicitly wants to
+        ## use ‘*’ instead of a wildcard.
+        echo "${f}" | grep -q '*'
+        if [ "$?" == "0" ]; then
+            echo "Do not support '*' in file or directory name: ${f}" 1>&2
+            continue
+        fi
+
+        if ! printf "%s\n" "${trashdirs[@]}" | grep "${f}" 1>/dev/null 2>&1; then
+            trashdirs[$i]="$(df "${f}" | tail -n1 | awk '{print $NF}')/.trash-$(id -u)"
+            let i+=1
+        fi
+    done
+
+    if [ ${#trashdirs[@]} -eq 0 ]; then
+        trashdirs=($(df | sed '1d' |    \
+                     awk "{print \$NF\"/.trash-$(id -u)\"}" |   \
+                     xargs realpath 2>/dev/null))
+    fi
+
+    printf "%s\n" "${trashdirs[@]}"
+}
+
+function listtrash()
+{
+    local trashdirs=($(gettrashdirs "$@"))
+    local found=0
+
+    local trashdir
+    for trashdir in "${trashdirs[@]}"; do
+        if [ ! -d "${trashdir}" ]; then
+            continue
+        fi
+
+        local name
+        for name in "${trashdir}"/.[!.]* "${trashdir}"/*; do
+            if [ "$name" = "${trashdir}/*" ] ||     \
+               [ "$name" = "${trashdir}/.[!.]*" ]; then
+                continue
+            fi
+
+            local realname
+            realname="$(basename "$name")"
+            realname="$(dirname ${trashdir})/${realname//%/\/}"
+            if [ -d "${name}" ]; then
+                echo -e "\033[36m${realname}\033[0m"
+            else
+                echo "${realname}"
+            fi
+            let found+=1
+        done
+    done
+
+    if [ "${found}" -le 0 ]; then
+        echo "All trash are empty!"
+    fi
+}
+
+function cleartrash()
+{
+    local confirm
+    read -p "clear sure? [y/N] " confirm
+
+    if [ "$confirm" == 'y' ] || [ "$confirm" == 'Y' ]; then
+        local trashdirs
+        local trashdir
+
+        trashdirs=($(gettrashdirs "$@"))
+        for trashdir in "${trashdirs[@]}"; do
+            /bin/rm -rf "${trashdir}"/.[!.]* "${trashdir}"/*
+        done
+    fi
+}
