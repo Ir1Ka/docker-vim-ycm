@@ -31,6 +31,8 @@ RUN bash -c 'yes | unminimize'                                      \
         git fakeroot libncurses-dev xz-utils libssl-dev bc flex     \
         libelf-dev bison gawk openssl dkms libudev-dev libpci-dev   \
         libiberty-dev autoconf                                      \
+# buildroot compile tools
+        cpio rsync                                                  \
 # RT-Thread compile tools
         scons python3-requests                                      \
 # tools
