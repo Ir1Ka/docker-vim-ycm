@@ -25,6 +25,8 @@ RUN bash -c 'yes | unminimize'                                      \
         gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf             \
 # cross mips64
         gcc-mips64-linux-gnuabi64 g++-mips64-linux-gnuabi64         \
+# cross riscv
+        gcc-riscv64-linux-gnu g++-riscv64-linux-gnu                 \
 # tools
         bash-completion iproute2 iputils-ping                       \
         git subversion git-svn git-cvs exuberant-ctags cscope       \
