@@ -15,7 +15,7 @@ RUN bash -c 'yes | unminimize'                                      \
         build-essential cmake vim-nox python3-dev                   \
         mono-complete golang nodejs default-jdk npm                 \
 # develop
-        ninja-build bison autoconf automake libtool gdb gettext     \
+        ninja-build automake libtool gdb gettext                    \
         gnu-standards autopoint                                     \
 # cross aarch64/arm64
         gcc-aarch64-linux-gnu g++-aarch64-linux-gnu                 \
@@ -27,16 +27,17 @@ RUN bash -c 'yes | unminimize'                                      \
         gcc-mips64-linux-gnuabi64 g++-mips64-linux-gnuabi64         \
 # cross riscv
         gcc-riscv64-linux-gnu g++-riscv64-linux-gnu                 \
+# linux kernel compile tools                                        \
+        git fakeroot libncurses-dev xz-utils libssl-dev bc flex     \
+        libelf-dev bison gawk openssl dkms libudev-dev libpci-dev   \
+        libiberty-dev autoconf                                      \
 # RT-Thread compile tools
         scons python3-requests                                      \
 # tools
         bash-completion iproute2 iputils-ping                       \
-        git subversion git-svn git-cvs exuberant-ctags cscope       \
+        subversion git-svn git-cvs exuberant-ctags cscope           \
         coreutils curl wget less file tree                          \
-        gawk libncurses-dev flex                                    \
-        dos2unix                                                    \
-        gnupg zip unzip ssh-client                                  \
-        lrzsz                                                       \
+        dos2unix gnupg zip unzip ssh-client lrzsz                   \
 # i386 runtime
         libc6:i386 libstdc++6:i386 zlib1g:i386                      \
 # clean
