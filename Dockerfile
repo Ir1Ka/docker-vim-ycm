@@ -27,6 +27,8 @@ RUN bash -c 'yes | unminimize'                                      \
         gcc-mips64-linux-gnuabi64 g++-mips64-linux-gnuabi64         \
 # cross riscv
         gcc-riscv64-linux-gnu g++-riscv64-linux-gnu                 \
+# RT-Thread compile tools
+        scons python3-requests                                      \
 # tools
         bash-completion iproute2 iputils-ping                       \
         git subversion git-svn git-cvs exuberant-ctags cscope       \
@@ -47,7 +49,9 @@ RUN bash -c 'yes | unminimize'                                      \
      [ -d $dir ] && sed -i 's/[[:space:]]*Dir::Cache::\(src\)\?pkgcache "";[[:space:]]*//g' $dir/*) \
 # do not clean APT cache
     && (f=/etc/apt/apt.conf.d/docker-clean;                         \
-        [ -f $f ] && sed -i 's? /var/cache/apt/\*\.bin??g' $f)
+        [ -f $f ] && sed -i 's? /var/cache/apt/\*\.bin??g' $f)      \
+# python3 as default python
+    && ln -s python3 /usr/bin/python
 
 # vim configuration
 COPY .vimrc /root/.vimrc
