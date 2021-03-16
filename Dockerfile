@@ -49,7 +49,7 @@ RUN bash -c 'yes | unminimize'                                      \
         /tmp/* /tmp/.[!.]* || true)                                 \
 # restore bash completion for apt
     && (dir=/etc/apt/apt.conf.d;                                    \
-     [ -d $dir ] && sed -i 's/[[:space:]]*Dir::Cache::\(src\)\?pkgcache "";[[:space:]]*//g' $dir/*) \
+        [ -d $dir ] && sed -i 's/[[:space:]]*Dir::Cache::\(src\)\?pkgcache "";[[:space:]]*//g' $dir/*)  \
 # do not clean APT cache
     && (f=/etc/apt/apt.conf.d/docker-clean;                         \
         [ -f $f ] && sed -i 's? /var/cache/apt/\*\.bin??g' $f)      \
