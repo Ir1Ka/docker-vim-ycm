@@ -27,10 +27,10 @@ RUN bash -c 'yes | unminimize'                                      \
         gcc-mips64-linux-gnuabi64 g++-mips64-linux-gnuabi64         \
 # cross riscv
         gcc-riscv64-linux-gnu g++-riscv64-linux-gnu                 \
-# linux kernel compile tools                                        \
+# linux kernel compile tools
         git fakeroot libncurses-dev xz-utils libssl-dev bc flex     \
         libelf-dev bison gawk openssl dkms libudev-dev libpci-dev   \
-        libiberty-dev autoconf                                      \
+        libiberty-dev autoconf device-tree-compiler                 \
 # buildroot compile tools
         cpio rsync                                                  \
 # RT-Thread compile tools
