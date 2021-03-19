@@ -26,7 +26,10 @@ RUN bash -c 'yes | unminimize'                                      \
 # cross mips64
         gcc-mips64-linux-gnuabi64 g++-mips64-linux-gnuabi64         \
 # cross riscv
+        # with glibc
         gcc-riscv64-linux-gnu g++-riscv64-linux-gnu                 \
+        # with newlib
+        gcc-riscv64-unknown-elf g++-riscv64-linux-gnu               \
 # linux kernel compile tools
         git fakeroot libncurses-dev xz-utils libssl-dev bc flex     \
         libelf-dev bison gawk openssl dkms libudev-dev libpci-dev   \
