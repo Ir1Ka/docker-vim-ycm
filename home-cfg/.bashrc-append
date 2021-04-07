@@ -1,5 +1,36 @@
-
 ###############################################
+
+shorten_path() {
+  local p="$1"
+  local cnt=0
+
+  local first="${p:1}"
+  local last=
+  local remain="$p"
+
+  first="${p:0:1}${first%%/*}"
+
+  local n
+  for n in 1 2; do
+    if [ "$remain" = '/' ] || [ "$remain" = '.' ]; then
+      break
+    fi
+
+    cnt=$((cnt+1))
+    last="$(basename ${remain})${last:+/${last}}"
+    remain="$(dirname "$remain")"
+  done
+
+  if [ "$cnt" -lt 2 ] ||    \
+     [ "$remain" = '.' ] || \
+     [ "$remain" = '/' ] || \
+     [ "$remain" = "$first" ]; then
+    echo "$p"
+  else
+    echo "${first}/.../${last}"
+  fi
+}
+PS1="${PS1//\\w/\$(shorten_path \"\\w\")}"
 
 # repo自动更新地址
 #export REPO_URL='https://gerrit-googlesource.proxy.ustclug.org/git-repo'
