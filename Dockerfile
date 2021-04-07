@@ -85,5 +85,7 @@ RUN bash -xec '                                                     \
     && mkdir -p /work
 WORKDIR /work
 
+ENV LANG C.UTF-8
+
 COPY my_init /
 ENTRYPOINT [ "/my_init" ]
