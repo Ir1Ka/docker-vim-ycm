@@ -8,4 +8,4 @@ else
     tag=$1
 fi
 
-exec docker build -t irika/vim-ycm:$tag "$DIR"
+exec docker build -t irikaq/vim-ycm:$tag "$DIR"
