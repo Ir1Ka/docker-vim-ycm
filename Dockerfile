@@ -71,7 +71,7 @@ RUN git clone https://github.com/VundleVim/Vundle.vim.git           \
 
 # environments
 COPY home-cfg /root
-RUN bash -xec '                                                     \
+RUN bash -xec 'cp /etc/skel/.[!.]* ~/;                              \
     for f in $(ls -d ~/.*-append); do                               \
         _f=${f%-append};                                            \
         if [[ -f "$f" && -r "$f" ]]; then                           \
