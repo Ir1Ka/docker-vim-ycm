@@ -86,6 +86,3 @@ RUN bash -xec 'cp /etc/skel/.[!.]* ~/;                              \
 WORKDIR /work
 
 ENV LANG C.UTF-8
-
-COPY my_init /
-ENTRYPOINT [ "/my_init" ]
