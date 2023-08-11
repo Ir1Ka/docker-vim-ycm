@@ -6,7 +6,7 @@ The image
 
 ``` shell
 # Create and run in background
-docekr run -d --name editor --restart always --env-file /path/to/.editor-envs -v /path/to/work:/work irikaq/vim-ycm -- tail -f /dev/null
+docekr run -d --name editor --init --restart always --env-file /path/to/.editor-envs -v /path/to/work:/work irikaq/vim-ycm -- tail -f /dev/null
 # Start a bash to use vim
 docker exec -it editor bash --login
 ```
