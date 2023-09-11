@@ -1,4 +1,4 @@
-FROM irikaq/vim-ycm
+FROM irika/vim-ycm
 
 ARG DEBIAN_FRONTEND=noninteractive
 
