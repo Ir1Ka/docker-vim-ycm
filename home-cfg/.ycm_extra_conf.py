@@ -36,7 +36,6 @@ import subprocess
 import sys
 import random
 import string
-from collections import Iterable
 
 DIR_OF_THIS_SCRIPT = p.abspath( p.dirname( __file__ ) )
 C_SOURCE_EXTENSIONS = [ '.c' ]
@@ -160,8 +159,10 @@ def CFlagsFromFilename( filename ):
     if lmodule and hasattr( lmodule, 'CppFlags' ):
       try:
         _cppflags = lmodule.CppFlags( filename )
-        if not isinstance( _cppflags, Iterable ):
-          raise Exception( 'Return value of CppFlags must be a Iterable!' )
+        try:
+            iter(_cppflags)
+        except TypeError:
+          raise TypeError( 'Return value of CppFlags must be a iter!' )
 
         for _cppflag in _cppflags:
           if not isinstance( _cppflag, str ):
@@ -180,8 +181,10 @@ def CFlagsFromFilename( filename ):
     if lmodule and hasattr( lmodule, 'CFlags' ):
       try:
         _cflags = lmodule.CFlags( filename )
-        if not isinstance( _cflags, Iterable ):
-          raise Exception( 'Return value of CFlags must be a Iterable!' )
+        try:
+            iter(_cflags)
+        except TypeError:
+          raise TypeError( 'Return value of CFlags must be a iter!' )
 
         for _cflag in _cflags:
           if not isinstance( _cflag, str ):
