@@ -1,5 +1,6 @@
 #!/bin/bash
 
+docker rm --force vim-ycm 2>/dev/null
 exec docker run -d                          \
                 --restart unless-stopped    \
                 --init                      \

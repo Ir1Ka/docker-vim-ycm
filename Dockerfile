@@ -99,6 +99,8 @@ RUN git clone https://github.com/VundleVim/Vundle.vim.git           \
 # environments
 RUN sed -i 's|^\(set undodir=\)~\(/.undo_history.*\)$|\1'"${WORKDIR}"'\2|g' \
            ~/.vimrc                                                 \
+    && sed -i '$a\\nset viminfofile='"${WORKDIR}"'/.viminfo'        \
+           ~/.vimrc                                                 \
     && for f in ~/.*-append; do                                     \
         _f=${f%-append};                                            \
         if [ -r "${f}" ]; then                                      \
@@ -111,8 +113,6 @@ RUN sed -i 's|^\(set undodir=\)~\(/.undo_history.*\)$|\1'"${WORKDIR}"'\2|g' \
     done                                                            \
     && rm -f ~/.*-append
 
-RUN ln -sf ${WORKDIR}/.viminfo ~/                                   \
-    && ln -sf ${WORKDIR}/.gitconfig ~/                              \
-    && ln -sf ${WORKDIR}/.undo_history ~/
+RUN ln -sf ${WORKDIR}/.gitconfig ~/
 
 ENV LANG C.UTF-8
