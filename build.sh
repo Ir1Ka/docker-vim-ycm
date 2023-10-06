@@ -10,4 +10,5 @@ exec docker build -t irika/vim-ycm${tag:+:${tag}} \
                   --build-arg TAG=12 \
                   --build-arg USER=$USER \
                   --build-arg UID=$UID \
+                  --pull \
             ${CURR_DIR}

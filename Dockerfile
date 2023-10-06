@@ -86,9 +86,7 @@ RUN cp --preserve=mode,timestamps /etc/skel/.[!.]* ~/               \
 RUN git clone https://github.com/IriKaQ/docker-vim-ycm.git          \
         /tmp/vim-ycm                                                \
     && (cd /tmp/vim-ycm/ && cp .vimrc home-cfg/.[!.]* ~/)           \
-    && rm -rf /tmp/vim-ycm                                          \
-    && ln -sfT ${WORKDIR}/.viminfo ~/.viminfo                       \
-    && sed -i 's|^\(set undodir=\)~\(/.undo_history.*\)$|\1'"${WORKDIR}"'\2|g' ~/.vimrc
+    && rm -rf /tmp/vim-ycm
 
 # install vim plugin and compile ycm
 RUN git clone https://github.com/VundleVim/Vundle.vim.git           \
@@ -99,7 +97,9 @@ RUN git clone https://github.com/VundleVim/Vundle.vim.git           \
     && rm -rf ~/.cache
 
 # environments
-RUN for f in ~/.*-append; do                             \
+RUN sed -i 's|^\(set undodir=\)~\(/.undo_history.*\)$|\1'"${WORKDIR}"'\2|g' \
+           ~/.vimrc                                                 \
+    && for f in ~/.*-append; do                                     \
         _f=${f%-append};                                            \
         if [ -r "${f}" ]; then                                      \
             if [ -w "${_f}" ]; then                                 \
@@ -110,5 +110,9 @@ RUN for f in ~/.*-append; do                             \
         fi;                                                         \
     done                                                            \
     && rm -f ~/.*-append
+
+RUN ln -sf ${WORKDIR}/.viminfo ~/                                   \
+    && ln -sf ${WORKDIR}/.gitconfig ~/                              \
+    && ln -sf ${WORKDIR}/.undo_history ~/
 
 ENV LANG C.UTF-8

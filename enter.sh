@@ -1,3 +1,3 @@
 #!/bin/bash
 
-exec docker exec -it vim-ycm bash -l
+exec docker exec -it vim-ycm bash -
