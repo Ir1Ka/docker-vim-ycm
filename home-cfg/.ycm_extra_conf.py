@@ -32,7 +32,7 @@ from distutils.sysconfig import get_python_inc
 import platform
 import os.path as p
 import subprocess
-#import ycm_core
+import ycm_core
 import sys
 import random
 import string
@@ -92,8 +92,7 @@ cpp_base_flags = [
 compilation_database_folder = ''
 
 if p.exists( compilation_database_folder ):
-  #database = ycm_core.CompilationDatabase( compilation_database_folder )
-  pass
+  database = ycm_core.CompilationDatabase( compilation_database_folder )
 else:
   database = None
 
@@ -122,7 +121,7 @@ def PathToPythonUsedDuringBuild():
   except ( IOError, OSError ):
     return None
 
-def FindYcmExtraConf( l_ycm_extra_conf , dir ):
+def FindFile( l_ycm_extra_conf , dir ):
   conf = p.join( dir, l_ycm_extra_conf )
   if p.isfile( conf ):
     return True, dir
@@ -130,12 +129,12 @@ def FindYcmExtraConf( l_ycm_extra_conf , dir ):
     return False, None
   else:
     dir = p.abspath( p.dirname( dir ) )
-    return FindYcmExtraConf( l_ycm_extra_conf, dir )
+    return FindFile( l_ycm_extra_conf, dir )
 
 def LoadLocalYcmExtraConf( filename ):
-  find, conf_dir = FindYcmExtraConf( L_YCM_EXTRA_CONF, \
+  found, conf_dir = FindFile( L_YCM_EXTRA_CONF, \
     p.dirname( p.abspath( filename ) ) )
-  if find:
+  if found:
     sys.path.insert( 0, conf_dir )
     old_dont_write_bytecode = sys.dont_write_bytecode
     sys.dont_write_bytecode = True
@@ -200,6 +199,14 @@ def CFlagsFromFilename( filename ):
 
   return flags + [ '-iquote', p.dirname( p.abspath( filename ) ) ]
 
+def DatabaseFromFilename( filename ):
+  folder = p.abspath( p.dirname( filename ) )
+  found, folder = FindFile( 'compile_commands.json', folder )
+  if found:
+    return ycm_core.CompilationDatabase( folder )
+  else:
+    return None
+
 def Settings( **kwargs ):
   language = kwargs[ 'language' ]
 
@@ -211,6 +218,10 @@ def Settings( **kwargs ):
     # possible to jump from a declaration in the header file to its definition
     # in the corresponding source file.
     filename = FindCorrespondingSourceFile( kwargs[ 'filename' ] )
+
+    global database
+    if not database:
+      database = DatabaseFromFilename( filename )
 
     if not database:
       return {
