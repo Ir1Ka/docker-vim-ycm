@@ -42,8 +42,6 @@ C_SOURCE_EXTENSIONS = [ '.c' ]
 CPP_SOURCE_EXTENSIONS = [ '.cpp', '.cxx', '.cc', '.m', '.mm' ]
 L_YCM_EXTRA_CONF = '.lycm_extra_conf.py'
 
-lmodule = None
-
 # These are the compilation flags that will be used in case there's no
 # compilation database set (by default, one is not set).
 # CHANGE THIS LIST OF FLAGS. YES, THIS IS THE DROID YOU HAVE BEEN LOOKING FOR.
@@ -134,24 +132,26 @@ def FindFile( l_ycm_extra_conf , dir ):
 def LoadLocalYcmExtraConf( filename ):
   found, conf_dir = FindFile( L_YCM_EXTRA_CONF, \
     p.dirname( p.abspath( filename ) ) )
-  if found:
-    sys.path.insert( 0, conf_dir )
-    old_dont_write_bytecode = sys.dont_write_bytecode
-    sys.dont_write_bytecode = True
-    try:
-      random_name = ''.join( random.choice( string.ascii_lowercase ) \
-        for x in range( 15 ) )
-      import importlib
-      global lmodule
-      lmodule = importlib.machinery.SourceFileLoader( \
-        random_name, conf_dir + '/' + L_YCM_EXTRA_CONF ).load_module()
-    finally:
-      sys.dont_write_bytecode = old_dont_write_bytecode
+  if not found:
+    return None
+
+  sys.path.insert( 0, conf_dir )
+  old_dont_write_bytecode = sys.dont_write_bytecode
+  sys.dont_write_bytecode = True
+  try:
+    random_name = ''.join( random.choice( string.ascii_lowercase ) \
+      for x in range( 15 ) )
+    import importlib
+    lmodule = importlib.machinery.SourceFileLoader( \
+      random_name, conf_dir + '/' + L_YCM_EXTRA_CONF ).load_module()
+  finally:
+    sys.dont_write_bytecode = old_dont_write_bytecode
     del sys.path[ 0 ]
+  return lmodule
 
 def CFlagsFromFilename( filename ):
   flags = []
-  LoadLocalYcmExtraConf( filename )
+  lmodule = LoadLocalYcmExtraConf( filename )
   extension = p.splitext( filename )[1]
   if extension in CPP_SOURCE_EXTENSIONS:
     flags.extend( cpp_base_flags )
