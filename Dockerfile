@@ -83,7 +83,7 @@ WORKDIR ${WORKDIR}
 RUN cp --preserve=mode,timestamps /etc/skel/.[!.]* ~/               \
     && sed -i 's/^\(\s*\)#alias\b/\1alias/g' ~/.bashrc
 
-RUN git clone https://github.com/IriKaQ/docker-vim-ycm.git          \
+RUN git clone https://github.com/Ir1Ka/docker-vim-ycm.git          \
         /tmp/vim-ycm                                                \
     && (cd /tmp/vim-ycm/ && cp .vimrc home-cfg/.[!.]* ~/)           \
     && rm -rf /tmp/vim-ycm
