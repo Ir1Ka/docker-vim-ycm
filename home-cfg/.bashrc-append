@@ -55,7 +55,7 @@ function enable_pyenv() {
 }
 
 # gradle
-#export GRADLE_HOME=/home/irika/.gradle/wrapper/dists/gradle-4.2-all
+#export GRADLE_HOME=${HOME}/.gradle/wrapper/dists/gradle-4.2-all
 #export PATH=$GRADLE_HOME/bin:$PATH
 
 # CUDA

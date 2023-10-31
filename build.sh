@@ -6,7 +6,7 @@ if [ $# -eq 0 ]; then
     tag=$1
 fi
 
-exec docker build -t irika/vim-ycm${tag:+:${tag}} \
+exec docker build -t ir1ka/vim-ycm${tag:+:${tag}} \
                   --build-arg TAG=12 \
                   --build-arg USER=$USER \
                   --build-arg UID=$UID \

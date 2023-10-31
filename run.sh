@@ -7,4 +7,4 @@ exec docker run -d                          \
                 --env TERM=xterm-color      \
                 --volume "${HOME}":/work:rw \
                 --name vim-ycm              \
-            irika/vim-ycm:latest tail -f /dev/null
+            ir1ka/vim-ycm:latest tail -f /dev/null
